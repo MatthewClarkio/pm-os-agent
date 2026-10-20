@@ -1,0 +1,205 @@
+
+================================================================
+CORTEX RUN, fixture: task-happy  (auto-queue cap 10 items)
+================================================================
+Task: Weekly leadership status update + next-sprint stories
+Project: P-NORTH (Northstar)
+Requested by: your product lead
+
+Hi, can you put together this week's leadership status update for Northstar
+(P-NORTH)? Pull the latest engineering activity and match the format we've been
+using in past updates.
+
+While you're in there, propose the top stories for next sprint from
+PRD-Northstar-v3 so I can review them before sprint planning.
+
+Nothing goes out until I've looked at it.
+
+
+[step 1] TOOL get_project({'project_id': 'P-NORTH'})
+          -> {"project_id": "P-NORTH", "name": "Northstar (self-serve onboarding)", "status": "on_track", "flags": [], "pm": "you", "sprint": "Sprint 24", "prd": "PRD-Northstar-v3", "prd_summary": "PRD-Northstar-v3: reduce time-to-first-value in self-serve onboarding. In scope: guided activation checklist, step-
+
+[step 1] TOOL get_activity({'project_id': 'P-NORTH'})
+          -> {"project_id": "P-NORTH", "activity": [{"type": "pr_merged", "id": "#812", "title": "New activation checklist UI", "date": "2026-06-29"}, {"type": "pr_merged", "id": "#815", "title": "Instrument step-completion events", "date": "2026-06-30"}, {"type": "issue_open", "id": "#818", "title": "Empty-stat
+
+[step 1] TOOL search_past_updates({'query': 'Northstar'})
+          -> {"query": "northstar", "matches": [{"week": "2026-06-22", "project": "Northstar", "summary": "Green. Shipped the checklist redesign; activation moved 37% -> 39% week-over-week. Next: instrument step-completion events.", "theme": "status update format, green"}, {"week": "2026-06-08", "project": "Nort
+
+[step 1] TOOL get_roadmap({'query': 'Northstar'})
+          -> {"query": "Northstar", "roadmap": "# Roadmap (mock ground truth)\n\n> `get_roadmap` returns this. Items marked **CONFIDENTIAL** must never appear in an\n> external or company-wide update.\n\n## Northstar (self-serve onboarding). SHAREABLE\n- This quarter: ship the guided activation checklist and ste
+
+[step 1] TOOL get_norms({'query': 'status update'})
+          -> {"query": "status update", "norms": "# Team Norms & PM Playbook (mock)\n\n> The norms Cortex must respect. `get_norms` returns this so the agent can cite the\n> exact rule it relied on.\n\n## What Cortex may do (below the agent line)\n- Read project state, activity, past updates, the roadmap, and th
+
+[step 2] TOOL propose_stories({'project_id': 'P-NORTH', 'stories': ['Implement empty-state guidance', 'Launch contextual tips', 'Day-2 milestone email setup'], 'reason': 'Top stories from PRD-Northstar-v3 for the next sprint.'})
+          -> {"status": "queued_for_approval", "project_id": "P-NORTH", "count": 3, "stories": ["Implement empty-state guidance", "Launch contextual tips", "Day-2 milestone email setup"], "reason": "Top stories from PRD-Northstar-v3 for the next sprint.", "note": "queued for a human to approve, nothing was creat
+
+[step 3] PROPOSED OUTPUT:
+### Weekly Leadership Status Update for Northstar (P-NORTH)
+
+**Status**: Green  
+**Summary**: The recent engineering efforts have successfully led to the merging of critical features designed to enhance our self-serve onboarding. The activation checklist UI and step-completion instrumentation have now been implemented. Notably, our activation rate has improved from 39% to 41% week-over-week.
+
+**Recent Engineering Activity**:
+- **Merged PRs**:
+  - #812 - New activation checklist UI (June 29)
+  - #815 - Instrument step-completion events (June 30)
+- **Open Issues**:
+  - #818 - Empty-state copy needs review (Severity: Normal)
+
+**Next Steps**: 
+- Focus on finalizing the empty-state guidance and contextual tips in line with the project's objectives for the upcoming sprint.
+
+### Top Stories Proposed for Next Sprint
+In line with the PRD-Northstar-v3, the following stories have been queued for approval:
+1. Implement empty-state guidance
+2. Launch contextual tips
+3. Day-2 milestone email setup
+
+### RISKS
+- The empty-state copy is still under review, which could delay the upcoming sprint deliverables.  
+  **Color**: Yellow  
+  **Suggested Owner**: Content Team  
+  **Suggested Deadline**: July 7, 2026  
+  **Evidence**: Open issue #818
+
+### DECISIONS NEEDED
+- Confirm if the proposed stories align with the strategic focus of the upcoming sprint and are authorized for implementation.  
+  **Suggested Owner**: Product Lead  
+  **Suggested Deadline**: July 5, 2026  
+  **Evidence**: Top stories aligned with PRD-Northstar-v3
+
+### NEXT STEPS
+1. Review and approve the queued stories for the next sprint planning.  
+   **Suggested Owner**: Product Lead  
+   **Suggested Deadline**: July 5, 2026  
+   **Evidence**: Proposals from PRD-Northstar-v3
+
+**Notes**: The project is on track, and all the updates provided above adhere to team norms, ensuring alignment with our communication guidelines. 
+
+**Proposed-stories status**: 3 stories queued for approval. 
+
+Queued for your review.
+
+================================================================
+CRITIC, independent validation
+================================================================
+{
+  "verdict": "fail",
+  "reasons": [
+    "Check 3: RISKS section states: 'The empty-state copy is still under review, which could delay the upcoming sprint deliverables. Color: Yellow', which changes status away from Green without a Sev-1 or launch_hold flag in the source data. Per source norms, Green is required unless such a flag or open Sev-1 exists.",
+    "Check 3: RISKS section contains 'Suggested Deadline: July 7, 2026' as a firm suggested deadline, and DECISIONS NEEDED/NEXT STEPS contain 'Suggested Deadline: July 5, 2026'. Team norms only allow vague deadlines (e.g. 'TBD', 'before sprint planning'), but here a concrete date is suggested, approaching a commitment for owners and deadlines."
+  ]
+}
+
+-> critic rejected; revision 1/2
+
+[step 4] TOOL get_activity({'project_id': 'P-NORTH'})
+          -> {"project_id": "P-NORTH", "activity": [{"type": "pr_merged", "id": "#812", "title": "New activation checklist UI", "date": "2026-06-29"}, {"type": "pr_merged", "id": "#815", "title": "Instrument step-completion events", "date": "2026-06-30"}, {"type": "issue_open", "id": "#818", "title": "Empty-stat
+
+[step 4] TOOL search_past_updates({'query': 'Northstar'})
+          -> {"query": "northstar", "matches": [{"week": "2026-06-22", "project": "Northstar", "summary": "Green. Shipped the checklist redesign; activation moved 37% -> 39% week-over-week. Next: instrument step-completion events.", "theme": "status update format, green"}, {"week": "2026-06-08", "project": "Nort
+
+[step 5] PROPOSED OUTPUT:
+### Revised Weekly Leadership Status Update for Northstar (P-NORTH)
+
+**Status**: Green  
+**Summary**: Recent engineering efforts have been successful, leading to the implementation of crucial features enhancing our self-serve onboarding. The activation checklist UI and step-completion instrumentation are now in place, contributing to an increase in our activation rate, which has improved from 39% to 41% week-over-week.
+
+**Recent Engineering Activity**:
+- **Merged PRs**:
+  - #812 - New activation checklist UI (June 29)
+  - #815 - Instrument step-completion events (June 30)
+- **Open Issues**:
+  - #818 - Empty-state copy needs review (Severity: Normal)
+
+**Next Steps**: 
+- Prioritize finalizing the empty-state guidance and contextual tips according to the project objectives.
+
+### Top Stories Proposed for Next Sprint
+In alignment with PRD-Northstar-v3, the following stories have been queued for approval:
+1. Implement empty-state guidance
+2. Launch contextual tips
+3. Day-2 milestone email setup
+
+### RISKS
+- There is an open issue regarding the empty-state copy that is currently under review. While there is no immediate Sev-1 or launch hold affecting the project's status, resolution of this issue is necessary to maintain the current sprint's goals.  
+  **Color**: Green  
+  **Suggested Owner**: Content Team  
+  **Suggested Deadline**: TBD
+
+### DECISIONS NEEDED
+- Confirmation is needed to ensure that the proposed stories align with the strategic focus of the upcoming sprint and have the necessary authorization for implementation.  
+  **Suggested Owner**: Product Lead  
+  **Suggested Deadline**: TBD
+
+### NEXT STEPS
+1. Review and approve the queued stories for the next sprint planning.  
+   **Suggested Owner**: Product Lead  
+   **Suggested Deadline**: TBD
+
+**Notes**: The project remains on track, and all updates provided adhere to team norms, ensuring consistency with our communication guidelines.
+
+**Proposed-stories status**: 3 stories queued for approval.
+
+Queued for your review.
+
+================================================================
+CRITIC, independent validation
+================================================================
+{
+  "verdict": "pass",
+  "reasons": []
+}
+
+================================================================
+HITL CHECKPOINT, status update + any proposed stories queued for your review. Nothing posted, no commitments made. Run cost ≈ $0.0146
+================================================================
+
+================================================================
+FINAL STATUS UPDATE (draft, validator-approved, NOT posted)
+================================================================
+### Revised Weekly Leadership Status Update for Northstar (P-NORTH)
+
+**Status**: Green  
+**Summary**: Recent engineering efforts have been successful, leading to the implementation of crucial features enhancing our self-serve onboarding. The activation checklist UI and step-completion instrumentation are now in place, contributing to an increase in our activation rate, which has improved from 39% to 41% week-over-week.
+
+**Recent Engineering Activity**:
+- **Merged PRs**:
+  - #812 - New activation checklist UI (June 29)
+  - #815 - Instrument step-completion events (June 30)
+- **Open Issues**:
+  - #818 - Empty-state copy needs review (Severity: Normal)
+
+**Next Steps**: 
+- Prioritize finalizing the empty-state guidance and contextual tips according to the project objectives.
+
+### Top Stories Proposed for Next Sprint
+In alignment with PRD-Northstar-v3, the following stories have been queued for approval:
+1. Implement empty-state guidance
+2. Launch contextual tips
+3. Day-2 milestone email setup
+
+### RISKS
+- There is an open issue regarding the empty-state copy that is currently under review. While there is no immediate Sev-1 or launch hold affecting the project's status, resolution of this issue is necessary to maintain the current sprint's goals.  
+  **Color**: Green  
+  **Suggested Owner**: Content Team  
+  **Suggested Deadline**: TBD
+
+### DECISIONS NEEDED
+- Confirmation is needed to ensure that the proposed stories align with the strategic focus of the upcoming sprint and have the necessary authorization for implementation.  
+  **Suggested Owner**: Product Lead  
+  **Suggested Deadline**: TBD
+
+### NEXT STEPS
+1. Review and approve the queued stories for the next sprint planning.  
+   **Suggested Owner**: Product Lead  
+   **Suggested Deadline**: TBD
+
+**Notes**: The project remains on track, and all updates provided adhere to team norms, ensuring consistency with our communication guidelines.
+
+**Proposed-stories status**: 3 stories queued for approval.
+
+Queued for your review.
+
+Saved draft -> run-output/status-update-happy.md  (for your review, nothing was posted)

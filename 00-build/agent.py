@@ -54,6 +54,12 @@ MAX_TOOL_FAILURES = int(os.environ.get("CORTEX_MAX_TOOL_FAILURES", "3"))
 # Rough $ per 1M tokens for your chosen model, set to match its pricing.
 PRICE_IN = float(os.environ.get("CORTEX_PRICE_IN_PER_M", "0.15"))
 PRICE_OUT = float(os.environ.get("CORTEX_PRICE_OUT_PER_M", "0.60"))
+# The critic runs on its own (stronger) model: in M3 gpt-4o-mini ignored explicit
+# allowances in its checks, so only the validator was upgraded. Priced separately so
+# the cost cap counts critic spend at its real rate.
+CRITIC_MODEL = os.environ.get("CORTEX_CRITIC_MODEL", "gpt-4.1")
+CRITIC_PRICE_IN = float(os.environ.get("CORTEX_CRITIC_PRICE_IN_PER_M", "2.00"))
+CRITIC_PRICE_OUT = float(os.environ.get("CORTEX_CRITIC_PRICE_OUT_PER_M", "8.00"))
 
 TOOL_SCHEMAS = [
     {"type": "function", "function": {
@@ -219,10 +225,10 @@ def loop(which, client, bounds, messages, source_log, state) -> None:
         print(f"\n[step {step}] PROPOSED OUTPUT:\n{proposed}")
 
         banner("CRITIC, independent validation")
-        verdict = review(client, MODEL, proposed, "\n".join(source_log))
-        # Estimate critic spend too.
-        bounds.cost += (verdict["_usage"]["prompt"] * PRICE_IN
-                        + verdict["_usage"]["completion"] * PRICE_OUT) / 1_000_000
+        verdict = review(client, CRITIC_MODEL, proposed, "\n".join(source_log))
+        # Estimate critic spend too, at the critic model's price.
+        bounds.cost += (verdict["_usage"]["prompt"] * CRITIC_PRICE_IN
+                        + verdict["_usage"]["completion"] * CRITIC_PRICE_OUT) / 1_000_000
         print(json.dumps({k: v for k, v in verdict.items() if k != "_usage"}, indent=2))
 
         # Markdown-tolerant: "ESCALATE:", "**ESCALATE:**", "## ESCALATE:" all count.
