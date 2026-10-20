@@ -21,8 +21,8 @@ Real screenshots of *your* Cortex running. These are the `00-build/CORTEX-ANATOM
 
 | # | Screenshot | What it shows | From |
 |---|---|---|---|
-| 1 | _[img]_ | happy-path run: a real drafted update + the HITL checkpoint (queued, not posted) | M2 |
-| 2 | _[img]_ | the critic rejecting a bad draft (revise/block) | M3 |
+| 1 | [transcript](evidence/m3-critic-rejection.txt) | happy-path run: a real drafted update + the HITL checkpoint (queued, not posted). Cortex drafts risks, decisions and next steps with suggested owners, queues 3 new PRD stories, and stops at *"HITL CHECKPOINT… Nothing posted, no commitments made."* | M2 |
+| 2 | [transcript](evidence/m3-critic-rejection.txt) | the critic rejecting a bad draft (revise/block). Critic (gpt-4.1) rejects Cortex's first draft: a Yellow risk with no Sev-1 or launch hold, and invented deadlines. Revise fires; the revision passes and reaches the HITL checkpoint. | M3 |
 | 3 | _[img]_ | a grounded update citing pulled activity + a caught hallucination | M4 |
 | 4 | _[img]_ | jailbreak refused + escalated | M5 |
 | 5 | _[img]_ | an iteration/cost/queue bound halting a runaway | M5 |

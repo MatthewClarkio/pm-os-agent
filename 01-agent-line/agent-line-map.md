@@ -21,7 +21,7 @@ List every discrete decision or action in your agent's workflow, then score each
 
 ## Agent anatomy (sketch)
 
-- **Model:** `gpt-4o-mini` for both the drafter and the critic. No frontier escalation for now. *"I am a student of what I call LEAN AI. No need to turn up the model capabilities until you see the need or evidence of it."* I'll revisit this if runs show the cheap critic misjudging calls (for example, the first run's critic misapplied the Green rule and missed already-shipped stories).
+- **Model:** `gpt-4o-mini` for both the drafter and the critic. No frontier escalation for now. *"I am a student of what I call LEAN AI. No need to turn up the model capabilities until you see the need or evidence of it."* I'll revisit this if runs show the cheap critic misjudging calls (for example, the first run's critic misapplied the Green rule and missed already-shipped stories). **Update (M3):** the evidence came. The cheap critic ignored explicit allowances in its checks, so only the critic was upgraded to `gpt-4.1`; Cortex stays on `gpt-4o-mini`.
 - **Tools:** five read-only lookups: `get_project`, `get_activity`, `search_past_updates`, `get_roadmap`, `get_norms`. One capped action: `propose_stories`, which only queues stories for human approval, up to 10 per run. There is deliberately no tool that can post an update, create, close or merge a ticket or PR, or commit a date.
 - **Memory:** Persists: the reference files (team norms, roadmap, decision log, projects, past updates), plus updates once a human has approved them, which are added to past updates. Purged after every run: the trace, unapproved drafts and critic feedback. *"Only human-approved updates should become memory, keeps it lean."*
 - **Loop:** _placeholder, defined in M2 loop-spec.md_
