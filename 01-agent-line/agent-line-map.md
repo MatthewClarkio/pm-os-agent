@@ -10,26 +10,37 @@ List every discrete decision or action in your agent's workflow, then score each
 
 | Decision / action | Reversibility (H/M/L) | Blast radius (H/M/L) | Measurability (H/M/L) | Above / Below | HITL? |
 |---|---|---|---|---|---|
-| _Pull project state + recent GitHub/Jira activity_ | H | L | H | Below | · |
-| _Draft the weekly leadership status update_ | H | M | M | Below | spot-check |
-| _Propose next sprint's stories from the PRD (within cap)_ | M | M | M | Below | spot-check |
-| _Post the update to a channel / commit a ship date_ | L | H | M | Above | required |
-| _Mark a launch gate green / merge or close a ticket_ | L | H | M | Above | required |
-| _…_ | | | | | |
+| Pull project state + activity | H | L | H | Below | None needed |
+| Decide which context is relevant | H | M | M | HITL | Required: human reviews before it goes out |
+| Draft the update | H | L | M | HITL | Required: human approves before it's released |
+| Decide tone / commitment level | L | H | L | Above | Human owns; Cortex may suggest, with evidence |
+| Flag at-risk / escalation | H | M | H | HITL | Required: human reviews flag + evidence (humans can flag too) |
+| Choose what to escalate | L | H | L | Above | Human owns, always |
+| Propose a story batch (capped) | H | L | M | HITL | Required: human approves before anything reaches the tracker |
+| Post / approve company-wide update | L | H | M | Above | Human owns |
 
 ## Agent anatomy (sketch)
 
-- **Model:** _your default fast model + when you escalate to a frontier model, and why_
-- **Tools:** _project + activity lookup (read) · past-update search · roadmap · team norms · story proposal (capped) …_
-- **Memory:** _what persists across runs (roadmap, decisions, norms) vs. purged_
+- **Model:** `gpt-4o-mini` for both the drafter and the critic. No frontier escalation for now. *"I am a student of what I call LEAN AI. No need to turn up the model capabilities until you see the need or evidence of it."* I'll revisit this if runs show the cheap critic misjudging calls (for example, the first run's critic misapplied the Green rule and missed already-shipped stories).
+- **Tools:** five read-only lookups: `get_project`, `get_activity`, `search_past_updates`, `get_roadmap`, `get_norms`. One capped action: `propose_stories`, which only queues stories for human approval, up to 10 per run. There is deliberately no tool that can post an update, create, close or merge a ticket or PR, or commit a date.
+- **Memory:** Persists: the reference files (team norms, roadmap, decision log, projects, past updates), plus updates once a human has approved them, which are added to past updates. Purged after every run: the trace, unapproved drafts and critic feedback. *"Only human-approved updates should become memory, keeps it lean."*
 - **Loop:** _placeholder, defined in M2 loop-spec.md_
 - **Bounds:** _placeholder, defined in M5 bounds-and-evals.md_
 - **Evals:** _placeholder, defined in M5 bounds-and-evals.md_
 
 ## The golden rule, applied
 
-_One sentence per above-the-line decision: why it stays human (which of reversibility / blast radius / measurability failed)._
+1. **Pulling project state + activity** sits **below** the line because it's easy to reverse, has a low blast radius, and is easy to verify; deciding factor: **reversibility** (it's read only, so nothing changes).
+2. **Deciding which context is relevant** sits at a **HITL** checkpoint because it's easy to reverse, has a medium blast radius, and is only partly verifiable; deciding factor: **measurability** (what's left out is hard to spot, so humans must review before it goes out).
+3. **Drafting the update** sits at a **HITL** checkpoint because it's easy to reverse, has a low blast radius, and is only partly verifiable; deciding factor: **measurability** (facts can be checked but quality is a judgment call, so a human must approve before it's released).
+4. **Deciding tone / commitment level** sits **above** the line because it's hard to reverse, has a high blast radius, and is hard to verify; deciding factor: **measurability** (no one, human or Cortex, can predict a ship date or the complications that may arise).
+5. **Flagging at-risk / escalation** sits at a **HITL** checkpoint because it's easy to reverse, has a medium blast radius, and is easy to verify; deciding factor: **blast radius** (a wrong or missed flag can do harm before it's caught, so a human must review the flag and its evidence, and humans can flag too).
+6. **Choosing what to escalate** sits **above** the line because it's hard to reverse, has a high blast radius, and is hard to verify; deciding factor: **measurability** (an issue that isn't escalated leaves no trace, and Cortex doesn't yet have the understanding to make this call).
+7. **Proposing a story batch** sits at a **HITL** checkpoint because it's easy to reverse, has a low blast radius, and is only partly verifiable; deciding factor: **measurability** (a story can trace to the PRD and still be work that's already shipped, so a human must approve before anything reaches the tracker).
+8. **Posting / approving a company-wide update** sits **above** the line because it's hard to reverse, has a high blast radius, and is only partly verifiable; deciding factor: **blast radius** (it reaches leadership or the whole company, which needs human understanding, context and accountability).
 
 ## Hardest call
 
-_Your toughest "above vs below" decision and how you resolved it. (Share this in `#cohort-channel`.)_
+**Action 2: Decide which context is relevant.** My pencil line was Below; it ended as **HITL**. Deciding axis: **measurability**.
+
+*"Honestly it's the fact that it will change over time. The agent will train and learn. We can always go below later and keep the process at a HITL checkpoint with the agent's suggestions. However, at first the agent may have the knowledge or data but not the judgement that is required."*
