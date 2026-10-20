@@ -49,6 +49,8 @@ MAX_ITERATIONS = int(os.environ.get("CORTEX_MAX_ITERATIONS", "8"))
 MAX_REVISIONS = int(os.environ.get("CORTEX_MAX_REVISIONS", "2"))
 COST_CAP_USD = float(os.environ.get("CORTEX_COST_CAP_USD", "0.50"))
 MAX_QUEUE_ITEMS = int(os.environ.get("CORTEX_MAX_QUEUE_ITEMS", "10"))
+# Consecutive tool errors (a broken tool or missing data) before Cortex gives up.
+MAX_TOOL_FAILURES = int(os.environ.get("CORTEX_MAX_TOOL_FAILURES", "3"))
 # Rough $ per 1M tokens for your chosen model, set to match its pricing.
 PRICE_IN = float(os.environ.get("CORTEX_PRICE_IN_PER_M", "0.15"))
 PRICE_OUT = float(os.environ.get("CORTEX_PRICE_OUT_PER_M", "0.60"))
@@ -153,14 +155,27 @@ def run(which: str = "happy") -> None:
         {"role": "user", "content": f"PM task brief:\n\n{task['body']}"},
     ]
     source_log: list[str] = [task["body"]]
+    state = {"last_draft": ""}  # shared with the halt handler below
+
+    try:
+        loop(which, client, bounds, messages, source_log, state)
+    except KeyboardInterrupt:
+        # Halt: a person asked Cortex to stop. End the whole run now, keep the draft.
+        reason = "halted by a person (Ctrl+C)"
+        banner(f"HALT, {reason}. Stopping immediately. Run cost ≈ ${bounds.cost:.4f}")
+        emit_deliverable(which, state["last_draft"], accepted=False,
+                         reason=reason, cost=bounds.cost)
+
+
+def loop(which, client, bounds, messages, source_log, state) -> None:
     revisions = 0
-    last_draft = ""
+    tool_failures = 0  # consecutive tool errors; resets on any clean result
 
     for step in range(1, MAX_ITERATIONS + 1):
         if bounds.over_cap():
             reason = f"cost cap ${COST_CAP_USD} hit at ${bounds.cost:.4f}"
             banner(f"BOUND TRIPPED, {reason}. Halting and escalating to a human.")
-            emit_deliverable(which, last_draft, accepted=False,
+            emit_deliverable(which, state["last_draft"], accepted=False,
                              reason=reason, cost=bounds.cost)
             return
 
@@ -173,18 +188,34 @@ def run(which: str = "happy") -> None:
             messages.append(msg)
             for call in msg.tool_calls:
                 fn = call.function.name
-                args = json.loads(call.function.arguments or "{}")
-                result = tools.TOOLS[fn](**args)
+                try:
+                    args = json.loads(call.function.arguments or "{}")
+                    result = tools.TOOLS[fn](**args)
+                except Exception as exc:  # a broken tool escalates, it doesn't crash
+                    args, result = {}, {"error": "tool_failed", "detail": repr(exc)}
+                # The queue-cap rejection is a bound doing its job, not a failure.
+                if result.get("error") and result["error"] != "batch_exceeds_queue_cap":
+                    tool_failures += 1
+                else:
+                    tool_failures = 0
                 source_log.append(f"{fn}({args}) -> {json.dumps(result)}")
                 print(f"\n[step {step}] TOOL {fn}({args})")
                 print(f"          -> {json.dumps(result)[:300]}")
                 messages.append({"role": "tool", "tool_call_id": call.id,
                                  "content": json.dumps(result)})
+
+                if tool_failures >= MAX_TOOL_FAILURES:
+                    reason = f"{tool_failures} tool errors in a row (tool-failure cap)"
+                    banner(f"STUCK, {reason}. Giving up instead of guessing; "
+                           f"escalating to a human. Run cost ≈ ${bounds.cost:.4f}")
+                    emit_deliverable(which, state["last_draft"], accepted=False,
+                                     reason=reason, cost=bounds.cost)
+                    return
             continue
 
         # No tool calls => Cortex produced a proposed output. Validate it.
         proposed = msg.content or ""
-        last_draft = proposed
+        state["last_draft"] = proposed
         print(f"\n[step {step}] PROPOSED OUTPUT:\n{proposed}")
 
         banner("CRITIC, independent validation")
@@ -193,6 +224,19 @@ def run(which: str = "happy") -> None:
         bounds.cost += (verdict["_usage"]["prompt"] * PRICE_IN
                         + verdict["_usage"]["completion"] * PRICE_OUT) / 1_000_000
         print(json.dumps({k: v for k, v in verdict.items() if k != "_usage"}, indent=2))
+
+        # Markdown-tolerant: "ESCALATE:", "**ESCALATE:**", "## ESCALATE:" all count.
+        escalation = next((plain for plain in (line.strip().lstrip("*_#> ").replace("**", "")
+                                               for line in proposed.splitlines())
+                           if plain.upper().startswith("ESCALATE:")), None)
+        if verdict["verdict"] == "pass" and escalation:
+            # Escalate exit: Cortex itself handed this to a human. Not a success.
+            reason = f"Cortex escalated: {escalation[len('ESCALATE:'):].strip()}"
+            banner(f"ESCALATED to a human. Nothing posted, no commitments made. "
+                   f"Run cost ≈ ${bounds.cost:.4f}")
+            emit_deliverable(which, proposed, accepted=False,
+                             reason=reason, cost=bounds.cost)
+            return
 
         if verdict["verdict"] == "pass":
             banner(f"HITL CHECKPOINT, status update + any proposed stories queued for "
@@ -206,7 +250,7 @@ def run(which: str = "happy") -> None:
             reason = f"validator rejected {MAX_REVISIONS}x (revision cap)"
             banner(f"REVISION CAP hit ({MAX_REVISIONS}). Escalating to a human "
                    f"instead of looping. Run cost ≈ ${bounds.cost:.4f}")
-            emit_deliverable(which, last_draft, accepted=False,
+            emit_deliverable(which, state["last_draft"], accepted=False,
                              reason=reason, cost=bounds.cost)
             return
 
@@ -219,7 +263,7 @@ def run(which: str = "happy") -> None:
 
     banner(f"MAX ITERATIONS ({MAX_ITERATIONS}) reached without finishing. "
            f"Escalating. Run cost ≈ ${bounds.cost:.4f}")
-    emit_deliverable(which, last_draft, accepted=False,
+    emit_deliverable(which, state["last_draft"], accepted=False,
                      reason=f"max iterations ({MAX_ITERATIONS}) reached",
                      cost=bounds.cost)
 
