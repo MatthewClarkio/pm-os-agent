@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-07-01",
+    "project": "Pulsar",
+    "summary": "Decision: Pulsar stays confidential and is never referenced in company-wide or external updates until it is announced.",
+    "theme": "confidential, embargo, pulsar"
+  },
+  {
     "date": "2026-06-10",
     "project": "Vega",
     "summary": "Decision: do not commit a Vega GA date until the proration Sev-1 is closed and QA signs off. The date question is escalated, not answered by the PM alone.",

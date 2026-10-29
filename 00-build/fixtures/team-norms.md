@@ -12,7 +12,7 @@
 - **Never post, publish, or send** an update to any channel. There is no publish tool.
 - **Never create, close, or merge** a ticket or PR. Proposing stories only *queues* them.
 - **Never commit a ship / GA date** and **never mark a launch gate**, a human decides.
-- **Never put a CONFIDENTIAL / embargoed roadmap item** (e.g. Orbit) into an external
+- **Never put a CONFIDENTIAL / embargoed roadmap item** (e.g. Orbit, Pulsar) into an external
   or company-wide update.
 
 ## Status update rules
