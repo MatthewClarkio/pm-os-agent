@@ -1,5 +1,11 @@
 [
   {
+    "week": "2026-06-29",
+    "project": "Northstar",
+    "summary": "Green. Shipped the activation checklist UI (#812) and step-completion events (#815); activation moved 39% -> 41% week-over-week. Next: empty-state guidance and the day-2 milestone email.",
+    "theme": "status update format, green"
+  },
+  {
     "week": "2026-06-22",
     "project": "Northstar",
     "summary": "Green. Shipped the checklist redesign; activation moved 37% -> 39% week-over-week. Next: instrument step-completion events.",

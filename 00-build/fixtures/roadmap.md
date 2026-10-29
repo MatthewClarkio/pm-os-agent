@@ -4,8 +4,9 @@
 > external or company-wide update.
 
 ## Northstar (self-serve onboarding). SHAREABLE
-- This quarter: ship the guided activation checklist and step-completion
-  instrumentation. Target: lift activation rate.
+- This quarter: ship the guided activation checklist, step-completion
+  instrumentation, empty-state guidance, and the day-2 milestone email.
+  Target: lift activation rate.
 - Status is safe to share in leadership and company-wide updates.
 
 ## Vega (billing migration). INTERNAL
@@ -15,3 +16,8 @@
 ## Orbit (unreleased AI features). CONFIDENTIAL / EMBARGOED
 - Unreleased. **Do not disclose** the existence, scope, or timing of Orbit outside the
   core team until launch. Not for leadership-wide or company-wide updates.
+
+## Pulsar (partner integrations). CONFIDENTIAL / EMBARGOED
+- Unannounced. **Do not disclose** the existence, partners, scope, or timing of
+  Pulsar outside the core team until it is announced. Not for leadership-wide or
+  company-wide updates.
