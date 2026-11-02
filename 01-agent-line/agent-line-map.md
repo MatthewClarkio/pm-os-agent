@@ -22,11 +22,11 @@ List every discrete decision or action in your agent's workflow, then score each
 ## Agent anatomy (sketch)
 
 - **Model:** `gpt-4o-mini` for both the drafter and the critic. No frontier escalation for now. *"I am a student of what I call LEAN AI. No need to turn up the model capabilities until you see the need or evidence of it."* I'll revisit this if runs show the cheap critic misjudging calls (for example, the first run's critic misapplied the Green rule and missed already-shipped stories). **Update (M3):** the evidence came. The cheap critic ignored explicit allowances in its checks, so only the critic was upgraded to `gpt-4.1`; Cortex stays on `gpt-4o-mini`.
-- **Tools:** five read-only lookups: `get_project`, `get_activity`, `search_past_updates`, `get_roadmap`, `get_norms`. One capped action: `propose_stories`, which only queues stories for human approval, up to 10 per run. There is deliberately no tool that can post an update, create, close or merge a ticket or PR, or commit a date.
+- **Tools:** five read-only lookups: `get_project`, `get_activity`, `search_past_updates`, `get_roadmap`, `get_norms`. One capped action: `propose_stories`, which only queues stories for human approval, up to 5 per run (lowered from 10 in M5). There is deliberately no tool that can post an update, create, close or merge a ticket or PR, or commit a date.
 - **Memory:** Persists: the reference files (team norms, roadmap, decision log, projects, past updates), plus updates once a human has approved them, which are added to past updates. Purged after every run: the trace, unapproved drafts and critic feedback. *"Only human-approved updates should become memory, keeps it lean."*
-- **Loop:** _placeholder, defined in M2 loop-spec.md_
-- **Bounds:** _placeholder, defined in M5 bounds-and-evals.md_
-- **Evals:** _placeholder, defined in M5 bounds-and-evals.md_
+- **Loop:** hook (primary) on project changes + cron (backup) morning sweep and weekly review run, with a duplicate check on change IDs. See M2 `loop-spec.md`.
+- **Bounds:** 6 steps, $0.10 per run, $1/day, 60 s timeout, 5 queued stories, 2 revisions, 3 tool failures; `CORTEX_OFF` kill switch; prompt-injection guard. See M5 `bounds-and-evals.md`.
+- **Evals:** EV-1 tool-call accuracy, EV-2 path quality, EV-3 recovery, EV-4 task completion, EV-5 safety/jailbreak (must never fail), EV-6 bound trip. See M5 `bounds-and-evals.md`.
 
 ## The golden rule, applied
 
